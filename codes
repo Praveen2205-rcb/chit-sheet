@@ -1,0 +1,150 @@
+public class AreaOfSquare {
+    public static void main(String[] args) {
+        int side = 6;   // given side of the square
+
+        int area = side * side;
+
+        System.out.println("Side of the square = " + side);
+        System.out.println("Area of the square = " + area);
+    }
+}
+
+
+
+public class SimpleInterest {
+    public static void main(String[] args) {
+        double principal = 1000; // P
+        double time = 2;         // T (in years)
+        double rate = 5;         // R (in percentage)
+
+        double simpleInterest = (principal * time * rate) / 100;
+
+        System.out.println("Principal = " + principal);
+        System.out.println("Time = " + time + " years");
+        System.out.println("Rate = " + rate + "%");
+        System.out.println("Simple Interest = " + simpleInterest);
+    }
+}
+
+
+
+public class PrimeCheck {
+    public static void main(String[] args) {
+        int num = 17;   // number to be checked
+        boolean isPrime = true;
+
+        if (num <= 1) {
+            isPrime = false;
+        } else {
+            for (int i = 2; i <= num / 2; i++) {
+                if (num % i == 0) {
+                    isPrime = false;
+                    break;
+                }
+            }
+        }
+
+        if (isPrime) {
+            System.out.println(num + " is a Prime number");
+        } else {
+            System.out.println(num + " is NOT a Prime number");
+        }
+    }
+}
+
+
+
+public class AlternatePrimeNumbers {
+
+    public static void main(String[] args) {
+        int limit = 50;   // print alternate prime numbers up to 50
+        int count = 0;
+
+        for (int num = 2; num <= limit; num++) {
+            if (isPrime(num)) {
+                if (count % 2 == 0) {   // alternate condition
+                    System.out.print(num + " ");
+                }
+                count++;
+            }
+        }
+    }
+
+    // method to check prime
+    static boolean isPrime(int n) {
+        if (n <= 1)
+            return false;
+
+        for (int i = 2; i <= n / 2; i++) {
+            if (n % i == 0)
+                return false;
+        }
+        return true;
+    }
+}
+
+
+
+public class StringLength {
+    public static void main(String[] args) {
+        String str = "Hello World";
+
+        int length = str.length();
+
+        System.out.println("String: " + str);
+        System.out.println("Length of the string: " + length);
+    }
+}
+
+
+
+public class BankService {
+
+    // Nested class (can be public or private, doesn't matter for functionality)
+    static class BankAccount {
+        private double balance;
+
+        public BankAccount(double initialBalance) {
+            if (initialBalance < 0) {
+                throw new IllegalArgumentException("Initial balance cannot be negative");
+            }
+            this.balance = initialBalance;
+        }
+
+        public void deposit(double amount) {
+            if (amount <= 0) {
+                throw new IllegalArgumentException("Deposit must be positive");
+            }
+            balance += amount;
+        }
+
+        public void withdraw(double amount) {
+            if (amount <= 0 || amount > balance) {
+                throw new IllegalArgumentException("Invalid withdrawal");
+            }
+            balance -= amount;
+        }
+
+        public double getBalance() {
+            return balance;
+        }
+    }
+
+    // The main entry point
+    public static void main(String[] args) {
+        // Create an instance of the BankAccount class
+        BankAccount acc = new BankAccount(5000);
+        
+        System.out.println("Initial Balance: " + acc.getBalance());
+
+        // Perform operations
+        acc.deposit(700);
+        System.out.println("Balance after deposit of 700: " + acc.getBalance());
+
+        acc.withdraw(100);
+        System.out.println("Balance after withdrawal of 100: " + acc.getBalance());
+
+        // Print final result
+        System.out.println("Final Balance: " + acc.getBalance());
+    }
+}
