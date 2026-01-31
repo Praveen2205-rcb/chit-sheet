@@ -1,0 +1,144 @@
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
+
+def generate_text(prompt, model_name="gpt2", max_length=200, temperature=0.7, top_k=50, top_p=0.95):
+    """
+    Generates text using a pretrained GPT model from Hugging Face.
+    
+    Args:
+        prompt (str): The input prompt to generate text from.
+        model_name (str): The name of the pretrained model to use (default: "gpt2").
+        max_length (int): Maximum length of the generated text.
+        temperature (float): Sampling temperature for randomness control.
+        top_k (int): Number of highest probability vocabulary tokens to keep for top-k filtering.
+        top_p (float): Nucleus sampling probability.
+    Returns:
+        str: Generated text.
+    """
+    # Load the model and tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+    
+    # Tokenize input prompt
+    input_ids = tokenizer(prompt, return_tensors="pt").input_ids
+    
+    # Generate text
+    output = model.generate(
+        input_ids,
+        max_length=max_length,
+        temperature=temperature,
+        top_k=top_k,
+        top_p=top_p,
+        do_sample=True
+    )
+    
+    # Decode and return the generated text
+    return tokenizer.decode(output[0], skip_special_tokens=True)
+
+# Example usage
+if __name__ == "__main__":
+    prompt = "In a world where robots ruled the cities,"
+    generated_text = generate_text(prompt)
+    print("Generated Text:", generated_text)
+
+
+from transformers import pipeline
+gen = pipeline("text-generation", model="gpt2")
+prompt = "write something about movie:"
+
+for temp in [0.2, 0.7, 2.6]:
+    out = gen(prompt, max_new_tokens=10, do_sample=True, temperature=temp, top_p=0.95)[0]["generated_text"]
+    print(f"\nTemperature={temp}\n{out}")
+
+from transformers import pipeline
+
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+
+
+text = """
+The Eiffel Tower is a lattice tower on the Champ de Mars in Paris, France. 
+It is named after the engineer Gustave Eiffel, whose company designed and 
+built the tower from 1887 to 1889. It was completed in March 1889 and served 
+as the centerpiece of the 1889 World's Fair.
+"""
+
+# 1. Summarization Experiment
+prompt_for_summarization = [
+    f"Summarize the following:\n{text}",
+    f"TL;DR:\n{text}"
+]
+
+print("\n== Summarization Experiment ==")
+for i, prompt in enumerate(prompt_for_summarization, 1):
+    summary = summarizer(prompt, max_length=50, min_length=10, do_sample=False)[0]['summary_text']
+    print(f"Prompt {i}: {prompt[:40].strip()}...")
+    print(f"Summary: {summary}\n")
+
+context = text
+questions = ["When was the Eiffel tower completed?"]
+
+print("== Question Answering Experiment ==")
+for question in questions:
+    result = qa_pipeline(question=question, context=context)
+    print(f"Question: {question}")
+    print(f"Answer: {result['answer']} (Confidence: {round(result['score'], 4)})")
+
+
+from transformers import pipeline, set_seed
+
+set_seed(42)
+model = pipeline("text-generation", model="gpt2")
+prompt = "The cat sat on the"
+
+print("\n=== Top-k sampling ===")
+out_k = model(
+    prompt,
+    max_new_tokens=20,
+    do_sample=True,
+    top_k=5,
+    temperature=0.9
+)
+print(out_k[0]["generated_text"])
+print("\n=== Top-p sampling ===")
+out_p = model(
+    prompt,
+    max_new_tokens=20,
+    do_sample=True,
+    top_p=0.9,
+    temperature=0.9
+)
+print(out_p[0]["generated_text"])
+
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_name = "tiiuae/falcon-7b-instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto")
+
+def medical_chatbot(prompt, max_length=150):
+    inputs = tokenizer(prompt, return_tensors='pt')
+    input_ids = inputs.input_ids.to(model.device)
+    attention_mask = inputs.attention_mask.to(model.device)
+    output_ids = model.generate(
+        input_ids,
+        attention_mask=attention_mask,
+        max_length=max_length,
+        do_sample=True,
+        temperature=1.5,
+        pad_token_id=tokenizer.eos_token_id
+    )
+
+    response = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    return response
+print("===Medical Chtbot Demo===")
+while True:
+    user_input = input("patient:")
+    if user_input.lower() in ["exit","quit']:
+       print("Chatbot:Goodbye")
+       break
+    prompt = f"You are a helpful medical assistance. Answer the patient's query accurately and politely."
+    response = medical_chatbot(prompt)
+    print("Assistant:",resoponse)
+
