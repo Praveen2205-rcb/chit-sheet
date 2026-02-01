@@ -150,3 +150,103 @@ sns.heatmap(marks_data, annot=True, cmap="coolwarm")
 plt.title("Heatmap of Student Performance")
 
 plt.show()
+
+3rd Question
+
+import pandas as pd
+
+data = {
+
+"Study_Hours": [2,4,6,8,10,5,7,9],
+
+"Attendance": [65,70,75,80,90,72,78,85],
+
+"Internal_Marks": [45,55,65,78,90,60,70,85],
+
+"Placed": [0,0,1,1,1,0,1,1]
+
+}
+
+df = pd.DataFrame(data)
+
+import matplotlib.pyplot as plt
+
+plt.scatter(df["Study_Hours"], df["Internal_Marks"])
+
+plt.xlabel("Study Hours")
+
+plt.ylabel("Internal Marks")
+
+plt.show()
+plt.scatter(df["Attendance"], df["Internal_Marks"])
+
+plt.xlabel("Attendance (%)")
+
+plt.ylabel("Internal Marks")
+
+plt.show()
+import pandas as pd
+
+data = {
+
+"Study_Hours": [2,4,6,8,10,5,7,9],
+
+"Attendance": [65,70,75,80,90,72,78,85],
+
+"Internal_Marks": [45,55,65,78,90,60,70,85],
+
+"Placed": [0,0,1,1,1,0,1,1]
+
+}
+
+df = pd.DataFrame(data)
+
+from sklearn.linear_model import LinearRegression
+
+from sklearn.metrics import mean_squared_error
+
+X = df[["Study_Hours", "Attendance"]]
+
+y = df["Internal_Marks"]
+
+model = LinearRegression()
+
+model.fit(X, y)
+
+prediction = model.predict([[7, 80]])
+
+print("Predicted Internal Marks:", prediction)
+
+mse = mean_squared_error(y, model.predict(X))
+
+print("MSE:", mse)
+import matplotlib.pyplot as plt
+
+plt.boxplot([df[df["Placed"]==0]["Internal_Marks"],
+
+df[df["Placed"]==1]["Internal_Marks"]],
+
+labels=["Not Placed","Placed"])
+
+plt.ylabel("Internal Marks")
+
+plt.show()
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.metrics import accuracy_score
+
+X = df[["Study_Hours","Attendance","Internal_Marks"]]
+
+y = df["Placed"]
+
+log_model = LogisticRegression()
+
+log_model.fit(X, y)
+
+result = log_model.predict([[6, 78, 68]])
+
+print("Placement Prediction:", result)
+accuracy = accuracy_score(y, log_model.predict(X))
+
+print("Accuracy:", accuracy)
+
