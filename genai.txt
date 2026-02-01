@@ -1,144 +1,152 @@
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
+1st Question
 
-def generate_text(prompt, model_name="gpt2", max_length=200, temperature=0.7, top_k=50, top_p=0.95):
-    """
-    Generates text using a pretrained GPT model from Hugging Face.
-    
-    Args:
-        prompt (str): The input prompt to generate text from.
-        model_name (str): The name of the pretrained model to use (default: "gpt2").
-        max_length (int): Maximum length of the generated text.
-        temperature (float): Sampling temperature for randomness control.
-        top_k (int): Number of highest probability vocabulary tokens to keep for top-k filtering.
-        top_p (float): Nucleus sampling probability.
-    Returns:
-        str: Generated text.
-    """
-    # Load the model and tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name)
-    
-    # Tokenize input prompt
-    input_ids = tokenizer(prompt, return_tensors="pt").input_ids
-    
-    # Generate text
-    output = model.generate(
-        input_ids,
-        max_length=max_length,
-        temperature=temperature,
-        top_k=top_k,
-        top_p=top_p,
-        do_sample=True
-    )
-    
-    # Decode and return the generated text
-    return tokenizer.decode(output[0], skip_special_tokens=True)
+import numpy as np
 
-# Example usage
-if __name__ == "__main__":
-    prompt = "In a world where robots ruled the cities,"
-    generated_text = generate_text(prompt)
-    print("Generated Text:", generated_text)
+# Sample data
 
+study_hours = [2, 4, 6, 8, 10, 12]
 
-from transformers import pipeline
-gen = pipeline("text-generation", model="gpt2")
-prompt = "write something about movie:"
+exam_score = [45, 55, 65, 75, 85, 95]
 
-for temp in [0.2, 0.7, 2.6]:
-    out = gen(prompt, max_new_tokens=10, do_sample=True, temperature=temp, top_p=0.95)[0]["generated_text"]
-    print(f"\nTemperature={temp}\n{out}")
+# Study Hours statistics
 
-from transformers import pipeline
+print("Study Hours")
 
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+print("Mean:", np.mean(study_hours))
 
+print("Median:", np.median(study_hours))
 
-text = """
-The Eiffel Tower is a lattice tower on the Champ de Mars in Paris, France. 
-It is named after the engineer Gustave Eiffel, whose company designed and 
-built the tower from 1887 to 1889. It was completed in March 1889 and served 
-as the centerpiece of the 1889 World's Fair.
-"""
+print("Standard Deviation:", np.std(study_hours))
 
-# 1. Summarization Experiment
-prompt_for_summarization = [
-    f"Summarize the following:\n{text}",
-    f"TL;DR:\n{text}"
-]
+# Exam Score statistics
 
-print("\n== Summarization Experiment ==")
-for i, prompt in enumerate(prompt_for_summarization, 1):
-    summary = summarizer(prompt, max_length=50, min_length=10, do_sample=False)[0]['summary_text']
-    print(f"Prompt {i}: {prompt[:40].strip()}...")
-    print(f"Summary: {summary}\n")
+print("\nExam Score")
 
-context = text
-questions = ["When was the Eiffel tower completed?"]
+print("Mean:", np.mean(exam_score))
 
-print("== Question Answering Experiment ==")
-for question in questions:
-    result = qa_pipeline(question=question, context=context)
-    print(f"Question: {question}")
-    print(f"Answer: {result['answer']} (Confidence: {round(result['score'], 4)})")
+print("Median:", np.median(exam_score))
 
+print("Standard Deviation:", np.std(exam_score))
 
-from transformers import pipeline, set_seed
+Study Hours
 
-set_seed(42)
-model = pipeline("text-generation", model="gpt2")
-prompt = "The cat sat on the"
+Mean: 7.0
 
-print("\n=== Top-k sampling ===")
-out_k = model(
-    prompt,
-    max_new_tokens=20,
-    do_sample=True,
-    top_k=5,
-    temperature=0.9
+Median: 7.0
+
+Standard Deviation: 3.415650255319866
+
+Exam Score
+
+Mean: 70.0
+
+Median: 70.0
+
+Standard Deviation: 17.07825127659933
+
+from scipy.stats import norm
+
+import numpy as np
+
+exam_score = [45, 55, 65, 75, 85, 95]
+
+mean = np.mean(exam_score)
+
+std = np.std(exam_score)
+
+probability = 1 - norm.cdf(75, mean, std)
+
+print("Probability of scoring more than 75:", probability)
+
+Probability of scoring more than 75: 0.38484897189064493
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+sns.histplot(exam_score, bins=5, kde=True)
+
+plt.xlabel("Exam Score")
+
+plt.ylabel("Number of Students")
+
+plt.title("Histogram of Exam Scores")
+
+plt.show()
+study_hours = [2, 4, 6, 8, 10, 12]
+
+plt.scatter(study_hours, exam_score, color='red', alpha=1.0, s=100)
+
+plt.title('Relationship Between Study Hours and Exam Marks')
+
+plt.xlabel('Study Hours')
+
+plt.ylabel('Exam Marks')
+
+plt.grid(True)
+
+plt.show()
+2nd Question
+
+import pandas as pd
+
+data = {
+
+"Student_ID": ["S1","S2","S3","S4","S5","S6","S7","S8"],
+
+"Department": ["CSE","ECE","ME","CSE","EEE","CSE","ME","ECE"],
+
+"Attendance": [85,92,70,88,75,95,68,80],
+
+"Internal_Marks": [78,85,65,82,70,90,60,75]
+
+}
+
+df = pd.DataFrame(data)
+
+import matplotlib.pyplot as plt
+
+avg_marks = df.groupby("Department")["Internal_Marks"].mean()
+
+avg_marks.plot(kind="bar")
+
+plt.xlabel("Department")
+
+plt.ylabel("Average Internal Marks")
+
+plt.title("Average Internal Marks by Department")
+
+plt.show()
+plt.scatter(df["Attendance"], df["Internal_Marks"])
+
+plt.xlabel("Attendance (%)")
+
+plt.ylabel("Internal Marks")
+
+plt.title("Attendance vs Internal Marks")
+
+plt.show()
+plt.boxplot(df["Internal_Marks"])
+
+plt.ylabel("Internal Marks")
+
+plt.title("Box Plot of Internal Marks")
+
+plt.show()
+import seaborn as sns
+
+marks_data = df.pivot_table(
+
+index="Student_ID",
+
+values="Internal_Marks",
+
+aggfunc="mean"
+
 )
-print(out_k[0]["generated_text"])
-print("\n=== Top-p sampling ===")
-out_p = model(
-    prompt,
-    max_new_tokens=20,
-    do_sample=True,
-    top_p=0.9,
-    temperature=0.9
-)
-print(out_p[0]["generated_text"])
 
+sns.heatmap(marks_data, annot=True, cmap="coolwarm")
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
+plt.title("Heatmap of Student Performance")
 
-model_name = "tiiuae/falcon-7b-instruct"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto")
-
-def medical_chatbot(prompt, max_length=150):
-    inputs = tokenizer(prompt, return_tensors='pt')
-    input_ids = inputs.input_ids.to(model.device)
-    attention_mask = inputs.attention_mask.to(model.device)
-    output_ids = model.generate(
-        input_ids,
-        attention_mask=attention_mask,
-        max_length=max_length,
-        do_sample=True,
-        temperature=1.5,
-        pad_token_id=tokenizer.eos_token_id
-    )
-
-    response = tokenizer.decode(output_ids[0], skip_special_tokens=True)
-    return response
-print("===Medical Chtbot Demo===")
-while True:
-    user_input = input("patient:")
-    if user_input.lower() in ["exit","quit']:
-       print("Chatbot:Goodbye")
-       break
-    prompt = f"You are a helpful medical assistance. Answer the patient's query accurately and politely."
-    response = medical_chatbot(prompt)
-    print("Assistant:",resoponse)
-
+plt.show()
